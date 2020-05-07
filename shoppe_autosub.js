@@ -11,15 +11,15 @@ productURLSliced = productURL.slice(0, productURL.lastIndexOf(".") - 1);
 shopid = productURL.slice(productURLSliced.lastIndexOf(".") + 1, productURL.lastIndexOf("."));
 
 for (var i = 0; i < max; i++) {
-    setTimeout(function () {
-        fetch("https://shopee.co.id/api/v2/item/get_ratings?filter=0&flag=1&itemid=" + itemid + "&limit=1&offset=" + i + "&shopid=" + shopid + "&type=0")
-            .then(response => response.json())
-            .then(data => {
-                author_shopid = data.data.ratings[0].author_shopid;
-                author_username = data.data.ratings[0].author_username;
+    fetch("https://shopee.co.id/api/v2/item/get_ratings?filter=0&flag=1&itemid=" + itemid + "&limit=1&offset=" + i + "&shopid=" + shopid + "&type=0")
+        .then(response => response.json())
+        .then(data => {
+            author_shopid = data.data.ratings[0].author_shopid;
+            author_username = data.data.ratings[0].author_username;
+            setTimeout(function () {
                 shopee_subscribe();
-            })
-    }, getRndInteger(3000, 9000));
+            }, getRndInteger(3000, 9000));
+        })
 }
 
 function shopee_subscribe() {
