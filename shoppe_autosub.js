@@ -1,29 +1,35 @@
 var productURL = document.URL;
 var csrftoken = getCookie("csrftoken");
-var author_shopid;
-var author_username;
 var itemid;
 var shopid;
 var max = 4;
+var timeDelayed = 0;
+var userN = 0;
 
 itemid = productURL.slice(productURL.lastIndexOf(".") + 1, productURL.length);
 productURLSliced = productURL.slice(0, productURL.lastIndexOf(".") - 1);
 shopid = productURL.slice(productURLSliced.lastIndexOf(".") + 1, productURL.lastIndexOf("."));
 
 for (var i = 0; i < max; i++) {
-    fetch("https://shopee.co.id/api/v2/item/get_ratings?filter=0&flag=1&itemid=" + itemid + "&limit=1&offset=" + i + "&shopid=" + shopid + "&type=0")
-        .then(response => response.json())
-        .then(data => {
-            author_shopid = data.data.ratings[0].author_shopid;
-            author_username = data.data.ratings[0].author_username;
-            setTimeout(function () {
-                shopee_subscribe();
-            }, getRndInteger(3000, 9000));
-        })
+    timeDelayed += getRndInteger(30, 90);
+    setTimeout(function () {
+        console.log(userN);
+        fetch("https://shopee.co.id/api/v2/item/get_ratings?filter=0&flag=1&itemid=" + itemid + "&limit=1&offset=" + userN + "&shopid=" + shopid + "&type=0")
+            .then(response => response.json())
+            .then(data => {
+                author_shopid = data.data.ratings[0].author_shopid;
+                author_username = data.data.ratings[0].author_username;
+                shopee_subscribe(
+                    data.data.ratings[0].author_shopid,
+                    data.data.ratings[0].author_username);
+            })
+        userN += 1;
+    }, timeDelayed * 100);
 }
 
-function shopee_subscribe() {
-    console.log("Data Parser" + author_shopid + author_username);
+
+function shopee_subscribe(author_shopid, author_username) {
+    console.log("Subscribed" + author_shopid + author_username);
     var shopee_api_subs = "https://shopee.co.id/api/v0/buyer/follow/shop/" + author_shopid + "/";
     fetch(shopee_api_subs, {
         "headers": {
