@@ -1,28 +1,62 @@
 var productURL = document.URL;
 var csrftoken = getCookie("csrftoken");
+var fetched_data_type = 0; // 0: review; 1:Follower
 var itemid;
 var shopid;
-var max = 4;
+var max = 2;
 var timeDelayed = 0;
-var userN = 0;
+var userN = 4;
 
-itemid = productURL.slice(productURL.lastIndexOf(".") + 1, productURL.length);
-productURLSliced = productURL.slice(0, productURL.lastIndexOf(".") - 1);
-shopid = productURL.slice(productURLSliced.lastIndexOf(".") + 1, productURL.lastIndexOf("."));
+switch (fetched_data_type) {
+    case 0:
+        itemid = productURL.slice(productURL.lastIndexOf(".") + 1, productURL.length);
+        productURLSliced = productURL.slice(0, productURL.lastIndexOf(".") - 1);
+        shopid = productURL.slice(productURLSliced.lastIndexOf(".") + 1, productURL.lastIndexOf("."));
+        break;
+
+    case 1:
+        shopid = productURL.slice(getPosition(productURL, "/", 4) + 1, getPosition(productURL, "/", 5));
+        break;
+
+    default:
+        break;
+}
+
 
 for (var i = 0; i < max; i++) {
     timeDelayed += getRndInteger(30, 90);
     setTimeout(function () {
-        fetch("https://shopee.co.id/api/v2/item/get_ratings?filter=0&flag=1&itemid=" + itemid + "&limit=1&offset=" + userN + "&shopid=" + shopid + "&type=0")
-            .then(response => response.json())
-            .then(data => {
-                author_shopid = data.data.ratings[0].author_shopid;
-                author_username = data.data.ratings[0].author_username;
-                shopee_subscribe(
-                    data.data.ratings[0].author_shopid,
-                    data.data.ratings[0].author_username,
-                    userN);
-            })
+        switch (fetched_data_type) {
+            case 0:
+                fetch("https://shopee.co.id/api/v2/item/get_ratings?filter=0&flag=1&itemid=" + itemid + "&limit=1&offset=" + userN + "&shopid=" + shopid + "&type=0")
+                    .then(response => response.json())
+                    .then(data => {
+                        shopee_subscribe(
+                            data.data.ratings[0].author_shopid,
+                            data.data.ratings[0].author_username,
+                            userN);
+                    })
+                break;
+
+            case 1:
+                fetch("https://shopee.co.id/shop/" + shopid + "/followers?offset=" + (userN + 1) + "&limit=1", {
+                    "headers": { "x-requested-with": "XMLHttpRequest" }
+                })
+                    .then(response => response.text())
+                    .then(html => {
+                        var parser = new DOMParser();
+                        var doc = parser.parseFromString(html, 'text/html');
+                        shopee_subscribe(
+                            doc.getElementsByTagName("li")[0].attributes[0].value,
+                            doc.getElementsByTagName("a")[0].attributes[1].value,
+                            userN);
+                    })
+
+            default:
+                break;
+        }
+
+
         userN += 1;
     }, timeDelayed * 100);
 }
@@ -78,4 +112,8 @@ function getCookie(cname) {
 
 function getRndInteger(min, max) {
     return Math.floor(Math.random() * (max - min)) + min;
+}
+
+function getPosition(string, subString, index) {
+    return string.split(subString, index).join(subString).length;
 }
