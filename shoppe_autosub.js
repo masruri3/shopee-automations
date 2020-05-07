@@ -13,7 +13,6 @@ shopid = productURL.slice(productURLSliced.lastIndexOf(".") + 1, productURL.last
 for (var i = 0; i < max; i++) {
     timeDelayed += getRndInteger(30, 90);
     setTimeout(function () {
-        console.log(userN);
         fetch("https://shopee.co.id/api/v2/item/get_ratings?filter=0&flag=1&itemid=" + itemid + "&limit=1&offset=" + userN + "&shopid=" + shopid + "&type=0")
             .then(response => response.json())
             .then(data => {
@@ -21,15 +20,15 @@ for (var i = 0; i < max; i++) {
                 author_username = data.data.ratings[0].author_username;
                 shopee_subscribe(
                     data.data.ratings[0].author_shopid,
-                    data.data.ratings[0].author_username);
+                    data.data.ratings[0].author_username,
+                    userN);
             })
         userN += 1;
     }, timeDelayed * 100);
 }
 
 
-function shopee_subscribe(author_shopid, author_username) {
-    console.log("Subscribed" + author_shopid + author_username);
+function shopee_subscribe(author_shopid, author_username, followed) {
     var shopee_api_subs = "https://shopee.co.id/api/v0/buyer/follow/shop/" + author_shopid + "/";
     fetch(shopee_api_subs, {
         "headers": {
@@ -50,7 +49,15 @@ function shopee_subscribe(author_shopid, author_username) {
         "method": "POST",
         "mode": "cors",
         "credentials": "include"
-    });
+    })
+        .then(function (response) {
+            if (response.status == 200) {
+                console.log("Followed" +
+                    " " + author_shopid +
+                    " " + author_username +
+                    " \t of total = " + followed);
+            }
+        });
 }
 
 function getCookie(cname) {
