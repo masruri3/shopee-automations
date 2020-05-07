@@ -19,7 +19,7 @@ for (var i = 0; i < max; i++) {
                 author_username = data.data.ratings[0].author_username;
                 shopee_subscribe();
             })
-    }, getRndInteger(5000, 20000));
+    }, getRndInteger(3000, 9000));
 }
 
 function shopee_subscribe() {
