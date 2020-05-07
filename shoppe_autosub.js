@@ -1,4 +1,4 @@
-var productURL = "";
+var productURL = document.URL;
 var csrftoken = getCookie("csrftoken");
 var author_shopid;
 var author_username;
@@ -6,7 +6,7 @@ var itemid;
 var shopid;
 var max = 4;
 
-itemid = productURL.slice(productURL.lastIndexOf(".") + 1, productURL.length);
+itemid = productURL.slice(productURL.lastIndexOf(".") + 1, productURL.length-1);
 productURLSliced = productURL.slice(0, productURL.lastIndexOf(".") - 1);
 shopid = productURL.slice(productURLSliced.lastIndexOf(".") + 1, productURL.lastIndexOf("."));
 
