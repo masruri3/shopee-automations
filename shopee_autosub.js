@@ -1,6 +1,7 @@
 var productURL = document.URL;
 var csrftoken = getCookie("csrftoken");
 var fetched_data_type = 0; // 0: review; 1:Follower
+var mode = 0; // 0: FOllow; 1: Unfollow
 var itemid;
 var shopid;
 var max = 2;
@@ -63,7 +64,8 @@ for (var i = 0; i < max; i++) {
 
 
 function shopee_subscribe(author_shopid, author_username, followed) {
-    var shopee_api_subs = "https://shopee.co.id/api/v0/buyer/follow/shop/" + author_shopid + "/";
+    var subs = mode ? "follow" : "unfollow";
+    var shopee_api_subs = "https://shopee.co.id/api/v0/buyer/" + subs + "/shop/" + author_shopid + "/";
     fetch(shopee_api_subs, {
         "headers": {
             "accept": "application/json",
